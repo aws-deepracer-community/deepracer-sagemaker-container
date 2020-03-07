@@ -1,0 +1,6 @@
+[submodule "sagemaker-tensorflow-container"]
+	path = sagemaker-tensorflow-container
+	url = https://github.com/aws/sagemaker-tensorflow-container.git
+[submodule "robomaker-container"]
+	path = robomaker-container
+	url = https://github.com/aws-deepracer-community/deepracer-simapp
