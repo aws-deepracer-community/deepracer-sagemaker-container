@@ -46,7 +46,7 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     rm *.tar.gz
 
     cd $DIR/sagemaker-tensorflow-container/
-    git apply --reverse ../lib/dockerfile-1.11-cpu.patch
+    git apply --reverse ../lib/dockerfile-1.11.patch
 
 fi
 
