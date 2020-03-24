@@ -59,5 +59,5 @@ cp -r robomaker-container/bundle/sagemaker_rl_agent/lib/python3.5/site-packages/
 
 for arch in $ARCH;
 do
-    docker build $OPT_NOCACHE -t $PREFIX/deepracer-sagemaker-container:$arch . --build-arg arch=$arch --build-arg prefix=$PREFIX
+    docker build $OPT_NOCACHE -t $PREFIX/deepracer-sagemaker:$arch . --build-arg arch=$arch --build-arg prefix=$PREFIX
 done
