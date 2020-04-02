@@ -40,7 +40,7 @@ RUN pip install -U --no-cache-dir \
     "awscli>=1.18,<2.0" 
 
 COPY ./lib/redis.conf /etc/redis/redis.conf
-COPY ./staging/markov /opt/amazon/markov
+#COPY ./staging/markov /opt/amazon/markov
 COPY ./lib/rl_coach.patch /opt/amazon/rl_coach.patch
 RUN patch -p1 -N --directory=/usr/local/lib/python3.6/dist-packages/ < /opt/amazon/rl_coach.patch
 
