@@ -55,7 +55,7 @@ cd $DIR
 rm -rf $DIR/staging
 mkdir -p $DIR/staging 
 
-cp -r robomaker-container/bundle/sagemaker_rl_agent/lib/python3.5/site-packages/markov staging/
+# cp -r robomaker-container/bundle/sagemaker_rl_agent/lib/python3.5/site-packages/markov staging/
 
 for arch in $ARCH;
 do
