@@ -8,11 +8,13 @@ function ctrl_c() {
 
 PREFIX="local"
 
-while getopts ":2cfgp:" opt; do
+while getopts ":2cfgp:t:" opt; do
 case $opt in
 2) OPT_SECOND_STAGE_ONLY="OPT_SECOND_STAGE_ONLY"
 ;; 
 p) PREFIX="$OPTARG"
+;; 
+t) OPT_TFPATH="$OPTARG"
 ;; 
 c) OPT_CPU="cpu"
 ;;
@@ -41,7 +43,7 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     cd docker/build_artifacts
 
     for arch in $ARCH; do
-        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$arch -f ../1.11.0/Dockerfile.$arch  --build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' 
+        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$arch -f ../1.11.0/Dockerfile.$arch  --build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' --build-arg framework_installable="$OPT_TFPATH"
     done
     rm *.tar.gz
 
