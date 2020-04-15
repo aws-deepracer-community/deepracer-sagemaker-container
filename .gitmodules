@@ -1,5 +1,0 @@
-[submodule "sagemaker-tensorflow-container"]
-	path = sagemaker-tensorflow-container
-	url = https://github.com/larsll/sagemaker-tensorflow-container.git
-	fetchRecurseSubmodules = false
-	shallow = true
