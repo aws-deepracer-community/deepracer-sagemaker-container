@@ -7,18 +7,21 @@ function ctrl_c() {
 }
 
 PREFIX="local"
+TF_PATH="https://storage.googleapis.com/intel-optimized-tensorflow/intel_tensorflow-1.13.1-cp36-cp36m-manylinux1_x86_64.whl"
 
-while getopts ":2cfgp:t:" opt; do
+while getopts ":2cfogp:t:" opt; do
 case $opt in
 2) OPT_SECOND_STAGE_ONLY="OPT_SECOND_STAGE_ONLY"
-;; 
+;;
 p) PREFIX="$OPTARG"
-;; 
-t) OPT_TFPATH="$OPTARG"
-;; 
+;;
+t) TF_PATH="$OPTARG"
+;;
 c) OPT_CPU="cpu"
 ;;
 g) OPT_GPU="gpu"
+;;
+o) OPT_OPTCPU="cpu-avx-mkn"
 ;;
 f) OPT_NOCACHE="--no-cache"
 ;;
@@ -30,7 +33,7 @@ done
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-ARCH=$(echo "$OPT_CPU $OPT_GPU")
+ARCH=$(echo "$OPT_CPU $OPT_GPU $OPT_CPU")
 echo "Preparing docker images for [$ARCH]"
 
 ## Second stage
@@ -40,25 +43,30 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     python setup.py sdist
     cp dist/*.tar.gz docker/build_artifacts/
     git apply $DIR/lib/dockerfile-1.11.patch
+    git apply $DIR/lib/dockerfile-1.13.1.patch
     cd docker/build_artifacts
 
     for arch in $ARCH; do
-        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$arch -f ../1.11.0/Dockerfile.$arch  --build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' --build-arg framework_installable="$OPT_TFPATH"
+
+	if [[  "$arch" != "cpu-avx-mkn" ]]; then
+	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$arch -f ../1.11.0/Dockerfile.$arch  \
+			--build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' 
+	else
+		docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$arch -f ../1.13.1/Dockerfile.cpu  \
+        	        --build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' \
+                	--build-arg TF_URL=$TF_PATH
+    	fi
     done
     rm *.tar.gz
 
     cd $DIR/sagemaker-tensorflow-container/
     git apply --reverse ../lib/dockerfile-1.11.patch
+    git apply --reverse ../lib/dockerfile-1.13.1.patch
 
 fi
 
 ## Second stage
 cd $DIR
-rm -rf $DIR/staging
-mkdir -p $DIR/staging 
-
-# cp -r robomaker-container/bundle/sagemaker_rl_agent/lib/python3.5/site-packages/markov staging/
-
 for arch in $ARCH;
 do
     docker build $OPT_NOCACHE -t $PREFIX/deepracer-sagemaker:$arch . --build-arg arch=$arch --build-arg prefix=$PREFIX
