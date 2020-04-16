@@ -37,6 +37,7 @@ RUN pip install -U --no-cache-dir \
     "mxnet-mkl>=1.3.1" \
     "numpy<2.0,>=1.16.0" \
     "sagemaker-containers>=2.7.1" \
+    "scipy==1.2.2" \
     "awscli>=1.18,<2.0" 
 
 COPY ./lib/redis.conf /etc/redis/redis.conf
