@@ -48,7 +48,7 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
 
     for arch in $ARCH; do
 
-	if [[  "$arch" != "cpu-avx-mkn" ]]; then
+	if [[  "$arch" != "cpu-avx-mkl" ]]; then
 	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$arch -f ../1.11.0/Dockerfile.$arch  \
 			--build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' 
 	else
