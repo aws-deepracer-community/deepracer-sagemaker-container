@@ -33,7 +33,7 @@ done
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-ARCH=$(echo "$OPT_CPU $OPT_GPU $OPT_CPU")
+ARCH=$(echo "$OPT_CPU $OPT_GPU $OPT_OPTCPU")
 echo "Preparing docker images for [$ARCH]"
 
 ## Second stage
