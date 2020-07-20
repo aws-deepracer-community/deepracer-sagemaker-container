@@ -21,7 +21,7 @@ c) OPT_CPU="cpu"
 ;;
 g) OPT_GPU="gpu"
 ;;
-o) OPT_OPTCPU="cpu-avx-mkn"
+o) OPT_OPTCPU="cpu-avx-mkl"
 ;;
 f) OPT_NOCACHE="--no-cache"
 ;;
