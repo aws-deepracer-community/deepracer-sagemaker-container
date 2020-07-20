@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxrender1 \
         python3.6-dev \
         python3-opengl \
+        xvfb \
         wget && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -31,7 +32,7 @@ RUN pip install -U --no-cache-dir \
     "rl-coach-slim==1.0.0"  \
     "urllib3>=1.21.1,<1.26,!=1.25.0,!=1.25.1" \
     "psutil==5.6.7" \
-    "botocore<1.16.0,>=1.15.0" \
+    "botocore<1.18.0,>=1.17.24" \
     retrying \
     eventlet \
     "numpy<2.0,>=1.16.0" \
