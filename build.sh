@@ -72,5 +72,5 @@ cd $DIR
 ## Second stage
 for arch in $ARCH;
 do
-    docker build $OPT_NOCACHE -t $PREFIX/deepracer-sagemaker:$VERSION-$arch . --build-arg version=$VERSION --build-arg arch=$arch --build-arg prefix=$PREFIX
+    docker build $OPT_NOCACHE -t $PREFIX/deepracer-sagemaker:$VERSION-$arch . --build-arg version=$VERSION --build-arg arch=$arch --build-arg prefix=$PREFIX --build-arg IMG_VERSION=$VERSION
 done
