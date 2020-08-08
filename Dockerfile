@@ -37,7 +37,8 @@ RUN pip install -U --no-cache-dir \
     eventlet \
     "numpy<2.0,>=1.16.0" \
     "sagemaker-containers>=2.7.1" \
-    "awscli>=1.18,<2.0" 
+    "awscli>=1.18,<2.0" \
+    "scipy>=1.2.2"
 
 COPY ./lib/redis.conf /etc/redis/redis.conf
 #COPY ./staging/markov /opt/amazon/markov
