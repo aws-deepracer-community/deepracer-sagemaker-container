@@ -1,17 +1,17 @@
 ARG arch
+ARG version
 ARG prefix
-FROM ${prefix}/sagemaker-tensorflow-container:${arch}
+FROM ${prefix}/sagemaker-tensorflow-container:${version}-${arch}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential \
         jq \
         ffmpeg \
         libjpeg-dev \
         libxrender1 \
         python3.6-dev \
         python3-opengl \
-        wget \
-        xvfb && \
+        xvfb \
+        wget && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -21,7 +21,8 @@ RUN cd /tmp && \
     tar xvzf redis-stable.tar.gz && \
     cd redis-stable && \
     make && \
-    make install
+    make install && \
+    rm -rf /tmp/redis*
 
 RUN pip install -U --no-cache-dir \
     "PyOpenGL==3.1.0" \
@@ -31,14 +32,13 @@ RUN pip install -U --no-cache-dir \
     "rl-coach-slim==1.0.0"  \
     "urllib3>=1.21.1,<1.26,!=1.25.0,!=1.25.1" \
     "psutil==5.6.7" \
-    "botocore<1.16.0,>=1.15.0" \
+    "botocore<1.18.0,>=1.17.24" \
     retrying \
     eventlet \
-    "mxnet-mkl>=1.3.1" \
     "numpy<2.0,>=1.16.0" \
     "sagemaker-containers>=2.7.1" \
-    "scipy==1.2.2" \
-    "awscli>=1.18,<2.0" 
+    "awscli>=1.18,<2.0" \
+    "scipy>=1.2.2"
 
 COPY ./lib/redis.conf /etc/redis/redis.conf
 #COPY ./staging/markov /opt/amazon/markov
@@ -60,5 +60,11 @@ WORKDIR /opt/ml/code
 ENV NODE_TYPE SAGEMAKER_TRAINING_WORKER
 
 ENV PYTHONUNBUFFERED 1
+
+# Versioning
+ARG IMG_VERSION
+LABEL maintainer "AWS DeepRacer Community - deepracing.io"
+LABEL version $IMG_VERSION
+
 # Starts framework
 ENTRYPOINT ["bash", "-m", "start.sh", "train"]

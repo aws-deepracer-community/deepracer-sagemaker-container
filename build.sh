@@ -21,7 +21,7 @@ c) OPT_CPU="cpu"
 ;;
 g) OPT_GPU="gpu"
 ;;
-o) OPT_OPTCPU="cpu-avx-mkn"
+o) OPT_OPTCPU="cpu-avx-mkl"
 ;;
 f) OPT_NOCACHE="--no-cache"
 ;;
@@ -32,6 +32,9 @@ esac
 done
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+rm -rf $DIR/sagemaker-tensorflow-container/dist/*
+cd $DIR
+VERSION=$(cat VERSION)
 
 ARCH=$(echo "$OPT_CPU $OPT_GPU $OPT_OPTCPU")
 echo "Preparing docker images for [$ARCH]"
@@ -49,10 +52,10 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     for arch in $ARCH; do
 
 	if [[  "$arch" != "cpu-avx-mkl" ]]; then
-	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$arch -f ../1.11.0/Dockerfile.$arch  \
+	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.11.0/Dockerfile.$arch  \
 			--build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' 
 	else
-		docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$arch -f ../1.13.1/Dockerfile.cpu  \
+		docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.13.1/Dockerfile.cpu  \
         	        --build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' \
                 	--build-arg TF_URL=$TF_PATH
     	fi
@@ -64,10 +67,10 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     git apply --reverse ../lib/dockerfile-1.13.1.patch
 
 fi
+cd $DIR
 
 ## Second stage
-cd $DIR
 for arch in $ARCH;
 do
-    docker build $OPT_NOCACHE -t $PREFIX/deepracer-sagemaker:$arch . --build-arg arch=$arch --build-arg prefix=$PREFIX
+    docker build $OPT_NOCACHE -t $PREFIX/deepracer-sagemaker:$VERSION-$arch . --build-arg version=$VERSION --build-arg arch=$arch --build-arg prefix=$PREFIX --build-arg IMG_VERSION=$VERSION
 done
