@@ -1,21 +1,8 @@
-diff --git a/docker/1.15.2/py3/Dockerfile.cpu b/docker/1.15.2/py3/Dockerfile.cpu
-index 88cbb6e..d98b1b4 100644
---- a/docker/1.15.2/py3/Dockerfile.cpu
-+++ b/docker/1.15.2/py3/Dockerfile.cpu
-@@ -107,7 +107,7 @@ RUN pip install --no-cache-dir -U \
-     # Let's install TensorFlow separately in the end to avoid
-     # the library version to be overwritten
-  && pip install --force-reinstall --no-cache-dir -U \
--    ${TF_URL} \
-+    tensorflow==1.15.2 \
-  && pip install --force-reinstall --no-cache-dir -U \
-     horovod==0.18.2 \
-  && pip install --no-cache-dir -U \
 diff --git a/docker/1.15.2/py3/Dockerfile.gpu b/docker/1.15.2/py3/Dockerfile.gpu
-index 30c9cd7..be5f1fe 100644
+index 56b5df5..7e9d0b7 100644
 --- a/docker/1.15.2/py3/Dockerfile.gpu
 +++ b/docker/1.15.2/py3/Dockerfile.gpu
-@@ -37,7 +37,7 @@ RUN apt-get update \
+@@ -36,7 +36,7 @@ RUN apt-get update \
      cuda-cusolver-dev-10-0 \
      cuda-cusparse-dev-10-0 \
      curl \
@@ -24,12 +11,12 @@ index 30c9cd7..be5f1fe 100644
      # TensorFlow doesn't require libnccl anymore but Open MPI still depends on it
      libnccl2=2.4.7-1+cuda10.0 \
      libgomp1 \
-@@ -144,7 +144,7 @@ RUN pip install --no-cache-dir -U \
+@@ -143,7 +143,7 @@ RUN pip install --no-cache-dir -U \
      # Let's install TensorFlow separately in the end to avoid
      # the library version to be overwritten
   && pip install --force-reinstall --no-cache-dir -U \
 -    ${TF_URL} \
 +    tensorflow_gpu==1.15.2 \
   && pip install --no-cache-dir -U \
-     $FRAMEWORK_SUPPORT_INSTALLABLE \
-     awscli\
+     awscli
+ 
