@@ -47,7 +47,7 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     cp dist/*.tar.gz docker/build_artifacts/
     git apply $DIR/lib/dockerfile-1.11.patch
     git apply $DIR/lib/dockerfile-1.13.1.patch
-    git apply $DIR/lib/dockerfile-1.15.2.patch
+    git apply $DIR/lib/dockerfile-1.15.4.patch
     cd docker/build_artifacts
 
     for arch in $ARCH; do
@@ -66,7 +66,7 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     cd $DIR/sagemaker-tensorflow-container/
     git apply --reverse ../lib/dockerfile-1.11.patch
     git apply --reverse ../lib/dockerfile-1.13.1.patch
-    git apply --reverse ../lib/dockerfile-1.15.2.patch
+    git apply --reverse ../lib/dockerfile-1.15.4.patch
 
 fi
 cd $DIR
