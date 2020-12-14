@@ -87,9 +87,7 @@ RUN pip install --no-cache-dir -U \
     "cryptography>=2.3" \
     "sagemaker-tensorflow>=1.15,<1.16" \
     "sagemaker-tensorflow-training>=2,<3" \
-    ${TF_URL} \
- && pip install --no-cache-dir -U \
-    awscli
+    ${TF_URL} 
 
 ADD https://raw.githubusercontent.com/aws/aws-deep-learning-containers-utils/master/deep_learning_container.py /usr/local/bin/deep_learning_container.py
 

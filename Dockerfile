@@ -22,7 +22,7 @@ RUN cd /tmp && \
     make install && \
     rm -rf /tmp/redis*
 
-RUN pip install -U --no-cache-dir \
+RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
     "PyOpenGL==3.1.0" \
     "pyglet==1.3.2" \
     "gym==0.12.5" \
@@ -30,7 +30,8 @@ RUN pip install -U --no-cache-dir \
     "rl-coach-slim==1.0.0"  \
     "minio==4.0.5" \
     eventlet \
-    "sagemaker-containers>=2.7.1" 
+    "sagemaker-containers>=2.7.1" \
+    awscli
 
 COPY ./lib/redis.conf /etc/redis/redis.conf
 #COPY ./staging/markov /opt/amazon/markov
