@@ -29,6 +29,8 @@ RUN pip install -U --no-cache-dir \
     "redis>=3.3" \
     "rl-coach-slim==1.0.0"  \
     "botocore<1.18.0,>=1.17.24" \
+    requests==2.24.0 \
+    minio==4.0.5 \
     retrying \
     eventlet \
     "sagemaker-containers>=2.7.1" 
