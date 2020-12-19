@@ -4,6 +4,7 @@ ARG prefix
 FROM ${prefix}/sagemaker-tensorflow-container:${version}-${arch}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        wget \
         jq \
         ffmpeg \
         libjpeg-dev \
