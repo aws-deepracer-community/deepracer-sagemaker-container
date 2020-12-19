@@ -1,0 +1,31 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ dev ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: "AWS CodeBuild run build" 
+        # You may pin to the exact commit or the version.
+        # uses: aws-actions/aws-codebuild-run-build@0a2ddc3a24e0f6b41d4a61635d87dcb2482c7b49
+        uses: aws-actions/aws-codebuild-run-build@v1.0.3
+        with:
+          # AWS CodeBuild Project Name
+          project-name: DeepRacer-Sagemaker
