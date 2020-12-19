@@ -58,7 +58,7 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
 	if [[  "$arch" == "gpu-nv" ]]; then
 	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.15.4/py3/Dockerfile.gpu  
 	elif [[  "$arch" == "cpu" || "$arch" == "gpu" ]]; then
-	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.11.0/py3/Dockerfile.$arch  \
+	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.11.0/Dockerfile.$arch  \
 			--build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' 
 	elif [[  "$arch" == "cpu-avx-mkl" ]]; then
 		docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.13.1/Dockerfile.cpu  \
