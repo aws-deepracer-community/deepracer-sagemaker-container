@@ -27,9 +27,10 @@ exit 1
 esac
 done
 
-ARCH=$(echo "$OPT_CPU $OPT_GPU $OPT_OPTCPU $OPT_GPUNV" | xargs)
+ARCH=$(echo $OPT_CPU $OPT_GPU $OPT_OPTCPU $OPT_GPUNV)
 echo "Pushing docker images for [$ARCH]"
 
-for arch in $ARCH; do
-  docker push $PREFIX/deepracer-sagemaker:$VERSION-$ARCH
+for A in $ARCH; do
+  echo "Pushing $PREFIX/deepracer-sagemaker:$VERSION-$A"
+  docker push $PREFIX/deepracer-sagemaker:$VERSION-$A
 done
