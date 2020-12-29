@@ -4,14 +4,13 @@ ARG prefix
 FROM ${prefix}/sagemaker-tensorflow-container:${version}-${arch}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        wget \
         jq \
         ffmpeg \
         libjpeg-dev \
         libxrender1 \
-        python3.6-dev \
         python3-opengl \
-        xvfb \
-        wget && \
+        xvfb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -24,21 +23,16 @@ RUN cd /tmp && \
     make install && \
     rm -rf /tmp/redis*
 
-RUN pip install -U --no-cache-dir \
+RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
     "PyOpenGL==3.1.0" \
     "pyglet==1.3.2" \
     "gym==0.12.5" \
     "redis>=3.3" \
     "rl-coach-slim==1.0.0"  \
-    "urllib3>=1.21.1,<1.26,!=1.25.0,!=1.25.1" \
-    "psutil==5.6.7" \
-    "botocore<1.18.0,>=1.17.24" \
-    retrying \
+    "minio==4.0.5" \
     eventlet \
-    "numpy<2.0,>=1.16.0" \
     "sagemaker-containers>=2.7.1" \
-    "awscli>=1.18,<2.0" \
-    "scipy>=1.2.2"
+    awscli
 
 COPY ./lib/redis.conf /etc/redis/redis.conf
 #COPY ./staging/markov /opt/amazon/markov
