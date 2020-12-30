@@ -41,7 +41,7 @@ VERSION=$(cat VERSION)
 ARCH=$(echo "$OPT_CPU $OPT_GPU $OPT_OPTCPU $OPT_GPUNV")
 echo "Preparing docker images for [$ARCH]"
 
-## Second stage
+## First stage
 if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
 
     cd $DIR/sagemaker-tensorflow-container/
