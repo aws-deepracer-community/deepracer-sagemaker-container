@@ -1,5 +1,5 @@
 diff --git a/docker/1.11.0/Dockerfile.cpu b/docker/1.11.0/Dockerfile.cpu
-index a303107..ea85de9 100644
+index a303107..979657a 100644
 --- a/docker/1.11.0/Dockerfile.cpu
 +++ b/docker/1.11.0/Dockerfile.cpu
 @@ -2,9 +2,9 @@ FROM ubuntu:16.04
@@ -14,7 +14,7 @@ index a303107..ea85de9 100644
  
  # Validate that arguments are specified
  RUN test $framework_installable || exit 1 \
-@@ -51,7 +51,7 @@ ENV KMP_AFFINITY=granularity=fine,compact,1,0 KMP_BLOCKTIME=1 KMP_SETTINGS=0
+@@ -51,11 +51,12 @@ ENV KMP_AFFINITY=granularity=fine,compact,1,0 KMP_BLOCKTIME=1 KMP_SETTINGS=0
  
  WORKDIR /
  
@@ -23,8 +23,13 @@ index a303107..ea85de9 100644
  COPY $framework_support_installable .
  
  RUN pip install --no-cache-dir -U \
+     keras==2.2.4 \
++    scipy==1.2.2 \
+     $framework_support_installable \
+     "sagemaker-tensorflow>=1.11,<1.12" \
+     # Let's install TensorFlow separately in the end to avoid
 diff --git a/docker/1.11.0/Dockerfile.gpu b/docker/1.11.0/Dockerfile.gpu
-index 92e9859..ab3a7a5 100644
+index 92e9859..dbb810c 100644
 --- a/docker/1.11.0/Dockerfile.gpu
 +++ b/docker/1.11.0/Dockerfile.gpu
 @@ -2,7 +2,7 @@ FROM nvidia/cuda:9.0-base-ubuntu16.04
@@ -36,7 +41,7 @@ index 92e9859..ab3a7a5 100644
  ARG framework_support_installable=sagemaker_tensorflow_container-2.0.0.tar.gz
  ARG py_version
  
-@@ -72,7 +72,7 @@ RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
+@@ -72,11 +72,12 @@ RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
  
  WORKDIR /
  
@@ -45,3 +50,8 @@ index 92e9859..ab3a7a5 100644
  COPY $framework_support_installable .
  
  RUN pip install --no-cache-dir -U \
+     keras==2.2.4 \
++    scipy==1.2.2 \
+     $framework_support_installable \
+     "sagemaker-tensorflow>=1.11,<1.12" \
+     # Let's install TensorFlow separately in the end to avoid

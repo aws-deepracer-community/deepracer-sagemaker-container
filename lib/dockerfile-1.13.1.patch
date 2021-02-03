@@ -1,8 +1,8 @@
 diff --git a/docker/1.13.1/Dockerfile.cpu b/docker/1.13.1/Dockerfile.cpu
-index a0d9478..27ce53a 100644
+index a0d9478..e1ee923 100644
 --- a/docker/1.13.1/Dockerfile.cpu
 +++ b/docker/1.13.1/Dockerfile.cpu
-@@ -58,27 +58,29 @@ ENV KMP_AFFINITY=granularity=fine,compact,1,0 KMP_BLOCKTIME=1 KMP_SETTINGS=0
+@@ -58,31 +58,33 @@ ENV KMP_AFFINITY=granularity=fine,compact,1,0 KMP_BLOCKTIME=1 KMP_SETTINGS=0
  WORKDIR /
  
  ARG PYTHON=python3
@@ -43,6 +43,11 @@ index a0d9478..27ce53a 100644
  
  RUN ${PIP} install --no-cache-dir -U \
             numpy==1.16.2 \
+-           scipy==1.2.1 \
++           scipy==1.2.2 \
+            scikit-learn==0.20.3 \
+            pandas==0.24.2 \
+            Pillow==5.4.1 \
 @@ -97,7 +99,8 @@ RUN ${PIP} install --no-cache-dir -U \
      # Let's install TensorFlow separately in the end to avoid
      # the library version to be overwritten
