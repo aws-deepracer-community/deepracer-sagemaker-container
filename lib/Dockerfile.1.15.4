@@ -16,8 +16,6 @@ ENV LC_ALL=C.UTF-8
 # https://docs.aws.amazon.com/sagemaker/latest/dg/docker-container-environmental-variables-entrypoint.html
 ENV SAGEMAKER_TRAINING_MODULE=sagemaker_tensorflow_container.training:main
 
-
-
 RUN apt-get update \
  && apt-get install -y --no-install-recommends --allow-unauthenticated \
     python3-dev \
@@ -67,7 +65,8 @@ RUN ln -s $(which python3) /usr/local/bin/python \
 
 ARG TF_URL="https://larsll-build-artifact-share.s3.eu-north-1.amazonaws.com/tensorflow/gpu-nv/tensorflow-1.15.4%2Bnv-cp36-cp36m-linux_x86_64.whl"
 
-RUN pip install --no-cache-dir -U \
+RUN pip --no-cache-dir install --upgrade 'pip<21' 'setuptools<50' \
+    && pip install --no-cache-dir -U \
     Pillow==7.0.0 \
     keras_preprocessing==1.1.0 \
     requests==2.22.0 \

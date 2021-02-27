@@ -1,5 +1,5 @@
 diff --git a/docker/1.13.1/Dockerfile.cpu b/docker/1.13.1/Dockerfile.cpu
-index a0d9478..e1ee923 100644
+index a0d9478..8d8e66d 100644
 --- a/docker/1.13.1/Dockerfile.cpu
 +++ b/docker/1.13.1/Dockerfile.cpu
 @@ -58,31 +58,33 @@ ENV KMP_AFFINITY=granularity=fine,compact,1,0 KMP_BLOCKTIME=1 KMP_SETTINGS=0
@@ -39,7 +39,7 @@ index a0d9478..e1ee923 100644
  # Some TF tools expect a "python" binary
 -RUN ln -s $(which ${PYTHON}) /usr/local/bin/python
 +# RUN ln -s $(which ${PYTHON}) /usr/local/bin/python
-+RUN ${PIP} --no-cache-dir install --upgrade setuptools
++RUN ${PIP} --no-cache-dir install --upgrade 'pip<20' 'setuptools<50'
  
  RUN ${PIP} install --no-cache-dir -U \
             numpy==1.16.2 \
