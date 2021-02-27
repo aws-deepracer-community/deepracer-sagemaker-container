@@ -6,8 +6,10 @@ function ctrl_c() {
         exit 1
 }
 
+set -e
+
 PREFIX="local"
-TF_PATH="https://storage.googleapis.com/intel-optimized-tensorflow/intel_tensorflow-1.13.1-cp36-cp36m-manylinux1_x86_64.whl"
+TF_PATH="https://storage.googleapis.com/intel-optimized-tensorflow/intel_tensorflow-1.13.2-cp36-cp36m-manylinux1_x86_64.whl"
 
 while getopts ":2cfognp:t:" opt; do
 case $opt in
@@ -71,7 +73,7 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     cd $DIR/sagemaker-tensorflow-container/
     git apply --reverse ../lib/dockerfile-1.11.patch
     git apply --reverse ../lib/dockerfile-1.13.1.patch
-    rm -rf $DIR/sagemaker-tensorflow-container/docker/1.15.4
+    rm -rf $DIR/sagemaker-tensorflow-container/docker/1.15.4/
 
 fi
 cd $DIR
@@ -81,3 +83,5 @@ for arch in $ARCH;
 do
     docker build $OPT_NOCACHE -t $PREFIX/deepracer-sagemaker:$VERSION-$arch . --build-arg version=$VERSION --build-arg arch=$arch --build-arg prefix=$PREFIX --build-arg IMG_VERSION=$VERSION
 done
+
+set +e
