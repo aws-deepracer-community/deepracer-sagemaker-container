@@ -1,0 +1,46 @@
+FROM nvidia/cuda:11.4.1-cudnn8-runtime-ubuntu20.04
+
+LABEL maintainer="Amazon AI"
+
+# Prevent docker build get stopped by requesting user interaction
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN=true
+# Python won’t try to write .pyc or .pyo files on the import of source modules
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+# See http://bugs.python.org/issue19846
+ENV PYTHONIOENCODING=UTF-8
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+# Specify the location of module that contains the training logic for SageMaker
+# https://docs.aws.amazon.com/sagemaker/latest/dg/docker-container-environmental-variables-entrypoint.html
+ENV SAGEMAKER_TRAINING_MODULE=sagemaker_tensorflow_container.training:main
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends --allow-unauthenticated python3.8-dev python3.8-distutils python3-pip python3-setuptools ca-certificates curl libhdf5-serial-dev git wget vim build-essential openssh-client zlib1g-dev libpng-dev libzmq3-dev libgomp1 libfreetype6-dev \
+ && rm -rf /var/lib/apt/lists/* \
+ && mkdir -p /var/run/sshd
+
+RUN /usr/bin/python3 -m pip install --upgrade pip && rm -f /usr/bin/pip && ln -s $(which pip3) /usr/bin/pip
+
+RUN pip install --extra-index-url https://pypi.ngc.nvidia.com https://developer.download.nvidia.com/compute/redist/nvidia-tensorflow/nvidia_tensorflow-1.15.5%2Bnv21.07-cp38-cp38-linux_x86_64.whl && pip cache purge
+
+RUN mkdir -p /var/run/sshd
+RUN echo NCCL_DEBUG=INFO >> /etc/nccl.conf
+
+RUN pip install Pillow==7.0.0 keras==2.3.1 requests==2.22.0 smdebug==0.7.2 sagemaker==1.50.17 sagemaker-experiments==0.1.7 scipy scikit-learn==0.23.2 pandas==0.25.3 "cryptography>=2.3" "sagemaker-tensorflow-training>=2,<3" && pip cache purge
+
+RUN ln -s $(which python3) /usr/local/bin/python
+
+RUN apt-get clean
+
+WORKDIR /
+
+ADD https://raw.githubusercontent.com/aws/aws-deep-learning-containers-utils/master/deep_learning_container.py /usr/local/bin/deep_learning_container.py
+RUN curl https://raw.githubusercontent.com/aws/aws-deep-learning-containers-utils/master/deep_learning_container.py >> /usr/local/bin/deep_learning_container.py
+RUN chmod +x /usr/local/bin/deep_learning_container.py
+
+RUN curl https://aws-dlc-licenses.s3.amazonaws.com/tensorflow/license.txt -o /license.txt
+
+CMD ["bin/bash"]
+

@@ -37,6 +37,7 @@ done
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 rm -rf $DIR/sagemaker-tensorflow-container/dist/*
+echo $DIR
 cd $DIR
 VERSION=$(cat VERSION)
 
@@ -45,20 +46,31 @@ echo "Preparing docker images for [$ARCH]"
 
 ## First stage
 if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
-
-    cd $DIR/sagemaker-tensorflow-container/
-    python setup.py sdist
-    cp dist/*.tar.gz docker/build_artifacts/
-    git apply $DIR/lib/dockerfile-1.11.patch
-    git apply $DIR/lib/dockerfile-1.13.1.patch
-    mkdir -p $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/
-    cp $DIR/lib/Dockerfile.1.15.4 $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/Dockerfile.gpu
-    cd docker/build_artifacts
+    echo "First stage of Build is starting now..."
+    echo "OPT_GPUNV - $OPT_GPUNV"
+    mkdir -p $DIR/sagemaker-tensorflow-container/docker/build_artifacts
+    if [[ ! -z "$OPT_GPUNV" ]]; then
+        echo "Nvidia GPU containers requested for build"
+        mkdir -p $DIR/sagemaker-tensorflow-container/docker/1.15.5/py3/
+        ls -l $DIR/lib/Dockerfile.1.15.5
+        cp $DIR/lib/Dockerfile.1.15.5 $DIR/sagemaker-tensorflow-container/docker/1.15.5/py3/Dockerfile.gpu
+        cd $DIR/sagemaker-tensorflow-container/docker/build_artifacts
+    else
+        echo "Non Nvidia GPU containers requested for build"
+        cd $DIR/sagemaker-tensorflow-container/
+        python setup.py sdist
+        cp dist/*.tar.gz docker/build_artifacts/
+        git apply $DIR/lib/dockerfile-1.11.patch
+        git apply $DIR/lib/dockerfile-1.13.1.patch
+        #mkdir -p $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/ 
+        #cp $DIR/lib/Dockerfile.1.15.4 $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/Dockerfile.gpu
+        cd docker/build_artifacts
+    fi
 
     for arch in $ARCH; do
 
 	if [[  "$arch" == "gpu-nv" ]]; then
-	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.15.4/py3/Dockerfile.gpu  
+	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.15.5/py3/Dockerfile.gpu  
 	elif [[  "$arch" == "cpu" || "$arch" == "gpu" ]]; then
 	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.11.0/Dockerfile.$arch  \
 			--build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' 
@@ -68,12 +80,18 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
                 	--build-arg TF_URL=$TF_PATH
     	fi
     done
-    rm *.tar.gz
 
-    cd $DIR/sagemaker-tensorflow-container/
-    git apply --reverse ../lib/dockerfile-1.11.patch
-    git apply --reverse ../lib/dockerfile-1.13.1.patch
-    rm -rf $DIR/sagemaker-tensorflow-container/docker/1.15.4/
+
+    if [[ ! -z "$OPT_GPUNV" ]]; then
+        rm -rf $DIR/sagemaker-tensorflow-container/docker/1.15.5/
+    else
+        rm *.tar.gz
+        cd $DIR/sagemaker-tensorflow-container/
+        git apply --reverse ../lib/dockerfile-1.11.patch
+        git apply --reverse ../lib/dockerfile-1.13.1.patch
+        #rm -rf $DIR/sagemaker-tensorflow-container/docker/1.15.4/
+    fi
+
 
 fi
 cd $DIR

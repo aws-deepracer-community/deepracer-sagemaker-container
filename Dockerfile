@@ -2,6 +2,7 @@ ARG arch
 ARG version
 ARG prefix
 FROM ${prefix}/sagemaker-tensorflow-container:${version}-${arch}
+#FROM awsdeepracercommunity/sagemaker-tensorflow-container:4.0.2-gpu-nv
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         wget \
@@ -37,7 +38,8 @@ RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
 COPY ./lib/redis.conf /etc/redis/redis.conf
 #COPY ./staging/markov /opt/amazon/markov
 COPY ./lib/rl_coach.patch /opt/amazon/rl_coach.patch
-RUN patch -p1 -N --directory=/usr/local/lib/python3.6/dist-packages/ < /opt/amazon/rl_coach.patch
+#RUN patch -p1 -N --directory=/usr/local/lib/python3.6/dist-packages/ < /opt/amazon/rl_coach.patch
+RUN patch -p1 -N --directory=/usr/local/lib/python3.8/dist-packages/ < /opt/amazon/rl_coach.patch
 
 ENV COACH_BACKEND=tensorflow
 
@@ -60,5 +62,11 @@ ARG IMG_VERSION
 LABEL maintainer "AWS DeepRacer Community - deepracing.io"
 LABEL version $IMG_VERSION
 
+#RUN tf_upgrade_v2 --intree /usr/local/lib/python3.8/dist-packages/rl_coach --inplace
+#RUN chown -R root:staff /usr/local/lib/python3.8/dist-packages/rl_coach/
+#RUN chmod -R 755 /usr/local/lib/python3.8/dist-packages/rl_coach/
+
 # Starts framework
 ENTRYPOINT ["bash", "-m", "start.sh", "train"]
+#CMD ["bin/bash"]
+
