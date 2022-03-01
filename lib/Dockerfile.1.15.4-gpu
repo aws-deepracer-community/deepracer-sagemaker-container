@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM nvidia/cuda:11.1-base-ubuntu18.04
 
 LABEL maintainer="Amazon AI"
 
@@ -19,10 +19,6 @@ ENV SAGEMAKER_TRAINING_MODULE=sagemaker_tensorflow_container.training:main
 RUN apt-get update && \
     apt-get install -y --no-install-recommends --allow-unauthenticated gnupg ca-certificates curl git wget vim openssh-client && \
     rm -rf /var/lib/apt/lists/*
-
-RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub && \
-	bash -c 'echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda.list' && \
-	bash -c 'echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda_learn.list'
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends --allow-unauthenticated \

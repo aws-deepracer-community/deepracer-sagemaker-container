@@ -46,8 +46,8 @@ echo "Preparing docker images for [$ARCH]"
 if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
 
     cd $DIR/sagemaker-tensorflow-container/
-    python setup.py sdist
-    cp dist/*.tar.gz docker/build_artifacts/
+    # python setup.py sdist
+    # cp dist/*.tar.gz docker/build_artifacts/
     # git apply $DIR/lib/dockerfile-1.11.patch
     # git apply $DIR/lib/dockerfile-1.13.1.patch
     mkdir -p $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/
@@ -66,7 +66,7 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     fi
 
     done
-    rm *.tar.gz
+    # rm *.tar.gz
 
     cd $DIR/sagemaker-tensorflow-container/
     # git apply --reverse ../lib/dockerfile-1.11.patch
