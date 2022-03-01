@@ -9,7 +9,6 @@ function ctrl_c() {
 set -e
 
 PREFIX="local"
-TF_PATH="https://storage.googleapis.com/intel-optimized-tensorflow/intel_tensorflow-1.13.2-cp36-cp36m-manylinux1_x86_64.whl"
 
 while getopts ":2cfognp:t:" opt; do
 case $opt in
@@ -49,30 +48,29 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     cd $DIR/sagemaker-tensorflow-container/
     python setup.py sdist
     cp dist/*.tar.gz docker/build_artifacts/
-    git apply $DIR/lib/dockerfile-1.11.patch
-    git apply $DIR/lib/dockerfile-1.13.1.patch
+    # git apply $DIR/lib/dockerfile-1.11.patch
+    # git apply $DIR/lib/dockerfile-1.13.1.patch
     mkdir -p $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/
-    cp $DIR/lib/Dockerfile.1.15.4 $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/Dockerfile.gpu
+    cp $DIR/lib/Dockerfile.1.15.4-gpu $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/Dockerfile.gpu
+    cp $DIR/lib/Dockerfile.1.15.4-cpu $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/Dockerfile.cpu
     cd docker/build_artifacts
 
     for arch in $ARCH; do
 
-	if [[  "$arch" == "gpu-nv" ]]; then
+	if [[  "$arch" == "gpu-nv" || "$arch" == "gpu" ]]; then
 	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.15.4/py3/Dockerfile.gpu  
-	elif [[  "$arch" == "cpu" || "$arch" == "gpu" ]]; then
-	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.11.0/Dockerfile.$arch  \
-			--build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' 
-	elif [[  "$arch" == "cpu-avx-mkl" ]]; then
-		docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.13.1/Dockerfile.cpu  \
-        	        --build-arg py_version=3 --build-arg framework_support_installable='sagemaker_tensorflow_*.tar.gz' \
-                	--build-arg TF_URL=$TF_PATH
-    	fi
+	elif [[  "$arch" == "cpu" ||  "$arch" == "cpu-avx-mkl" ]]; then
+            TF_PATH="intel-tensorflow==1.15.4"
+	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.15.4/py3/Dockerfile.cpu  \
+			--build-arg TF_URL=$TF_PATH
+    fi
+
     done
     rm *.tar.gz
 
     cd $DIR/sagemaker-tensorflow-container/
-    git apply --reverse ../lib/dockerfile-1.11.patch
-    git apply --reverse ../lib/dockerfile-1.13.1.patch
+    # git apply --reverse ../lib/dockerfile-1.11.patch
+    # git apply --reverse ../lib/dockerfile-1.13.1.patch
     rm -rf $DIR/sagemaker-tensorflow-container/docker/1.15.4/
 
 fi
