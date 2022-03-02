@@ -46,10 +46,6 @@ echo "Preparing docker images for [$ARCH]"
 if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
 
     cd $DIR/sagemaker-tensorflow-container/
-    # python setup.py sdist
-    # cp dist/*.tar.gz docker/build_artifacts/
-    # git apply $DIR/lib/dockerfile-1.11.patch
-    # git apply $DIR/lib/dockerfile-1.13.1.patch
     mkdir -p $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/
     cp $DIR/lib/Dockerfile.1.15.4-gpu $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/Dockerfile.gpu
     cp $DIR/lib/Dockerfile.1.15.4-cpu $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/Dockerfile.cpu
@@ -58,11 +54,13 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
     for arch in $ARCH; do
 
 	if [[  "$arch" == "gpu-nv" || "$arch" == "gpu" ]]; then
-	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.15.4/py3/Dockerfile.gpu  
+            TF_PATH="https://larsll-build-artifact-share.s3.eu-north-1.amazonaws.com/tensorflow/gpu-nv/tensorflow-1.15.4%2Bnv-cp36-cp36m-linux_x86_64.whl"
+	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.15.4/py3/Dockerfile.gpu  \
+                --build-arg TF_URL=$TF_PATH 
 	elif [[  "$arch" == "cpu" ||  "$arch" == "cpu-avx-mkl" ]]; then
             TF_PATH="intel-tensorflow==1.15.4"
 	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.15.4/py3/Dockerfile.cpu  \
-			--build-arg TF_URL=$TF_PATH
+			    --build-arg TF_URL=$TF_PATH
     fi
 
     done
