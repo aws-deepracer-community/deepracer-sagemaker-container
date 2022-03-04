@@ -35,7 +35,6 @@ esac
 done
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-rm -rf $DIR/sagemaker-tensorflow-container/dist/*
 cd $DIR
 VERSION=$(cat VERSION)
 
@@ -45,31 +44,19 @@ echo "Preparing docker images for [$ARCH]"
 ## First stage
 if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
 
-    cd $DIR/sagemaker-tensorflow-container/
-    mkdir -p $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/
-    cp $DIR/lib/Dockerfile.1.15.4-gpu $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/Dockerfile.gpu
-    cp $DIR/lib/Dockerfile.1.15.4-cpu $DIR/sagemaker-tensorflow-container/docker/1.15.4/py3/Dockerfile.cpu
-    cd docker/build_artifacts
-
     for arch in $ARCH; do
 
 	if [[  "$arch" == "gpu-nv" || "$arch" == "gpu" ]]; then
             TF_PATH="https://larsll-build-artifact-share.s3.eu-north-1.amazonaws.com/tensorflow/gpu-nv/tensorflow-1.15.4%2Bnv-cp36-cp36m-linux_x86_64.whl"
-	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.15.4/py3/Dockerfile.gpu  \
+	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f docker/primary/Dockerfile.gpu  \
                 --build-arg TF_URL=$TF_PATH 
 	elif [[  "$arch" == "cpu" ||  "$arch" == "cpu-avx-mkl" ]]; then
-            TF_PATH="intel-tensorflow==1.15.4"
-	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f ../1.15.4/py3/Dockerfile.cpu  \
+            TF_PATH="intel-tensorflow==1.15.2"
+	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f docker/primary/Dockerfile.cpu  \
 			    --build-arg TF_URL=$TF_PATH
     fi
 
     done
-    # rm *.tar.gz
-
-    cd $DIR/sagemaker-tensorflow-container/
-    # git apply --reverse ../lib/dockerfile-1.11.patch
-    # git apply --reverse ../lib/dockerfile-1.13.1.patch
-    rm -rf $DIR/sagemaker-tensorflow-container/docker/1.15.4/
 
 fi
 cd $DIR
@@ -77,7 +64,7 @@ cd $DIR
 ## Second stage
 for arch in $ARCH;
 do
-    docker build $OPT_NOCACHE -t $PREFIX/deepracer-sagemaker:$VERSION-$arch . --build-arg version=$VERSION --build-arg arch=$arch --build-arg prefix=$PREFIX --build-arg IMG_VERSION=$VERSION
+    docker build $OPT_NOCACHE -f docker/secondary/Dockerfile -t $PREFIX/deepracer-sagemaker:$VERSION-$arch . --build-arg version=$VERSION --build-arg arch=$arch --build-arg prefix=$PREFIX --build-arg IMG_VERSION=$VERSION
 done
 
 set +e
