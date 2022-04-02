@@ -10,7 +10,7 @@ set -e
 
 PREFIX="local"
 
-while getopts ":2cfognp:t:" opt; do
+while getopts ":2cfglp:t:" opt; do
 case $opt in
 2) OPT_SECOND_STAGE_ONLY="OPT_SECOND_STAGE_ONLY"
 ;;
@@ -22,9 +22,7 @@ c) OPT_CPU="cpu"
 ;;
 g) OPT_GPU="gpu"
 ;;
-n) OPT_GPUNV="gpu-nv"
-;;
-o) OPT_OPTCPU="cpu-avx-mkl"
+l) OPT_GPULEGACY="gpu-legacy"
 ;;
 f) OPT_NOCACHE="--no-cache"
 ;;
@@ -38,7 +36,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $DIR
 VERSION=$(cat VERSION)
 
-ARCH=$(echo "$OPT_CPU $OPT_GPU $OPT_OPTCPU $OPT_GPUNV")
+ARCH=$(echo "$OPT_CPU $OPT_GPU $OPT_GPULEGACY")
 echo "Preparing docker images for [$ARCH]"
 
 ## First stage
@@ -46,11 +44,13 @@ if [[ -z "$OPT_SECOND_STAGE_ONLY" ]]; then
 
     for arch in $ARCH; do
 
-	if [[  "$arch" == "gpu-nv" || "$arch" == "gpu" ]]; then
+	if [[  "$arch" == "gpu" ]]; then
             TF_PATH="https://larsll-build-artifact-share.s3.eu-north-1.amazonaws.com/tensorflow/gpu-nv/tensorflow-1.15.4%2Bnv-cp36-cp36m-linux_x86_64.whl"
 	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f docker/primary/Dockerfile.gpu  \
                 --build-arg TF_URL=$TF_PATH 
-	elif [[  "$arch" == "cpu" ||  "$arch" == "cpu-avx-mkl" ]]; then
+	elif [[  "$arch" == "gpu-legacy" ]]; then
+            docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f docker/primary/Dockerfile.gpu-legacy  
+	elif [[  "$arch" == "cpu" ]]; then
             TF_PATH="intel-tensorflow==1.15.2"
 	        docker build $OPT_NOCACHE . -t $PREFIX/sagemaker-tensorflow-container:$VERSION-$arch -f docker/primary/Dockerfile.cpu  \
 			    --build-arg TF_URL=$TF_PATH
