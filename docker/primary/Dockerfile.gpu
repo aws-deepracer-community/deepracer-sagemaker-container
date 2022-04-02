@@ -1,0 +1,83 @@
+FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
+
+LABEL maintainer="Amazon AI"
+
+# Prevent docker build get stopped by requesting user interaction
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN=true
+# Python won’t try to write .pyc or .pyo files on the import of source modules
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+# See http://bugs.python.org/issue19846
+ENV PYTHONIOENCODING=UTF-8
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+# Specify the location of module that contains the training logic for SageMaker
+# https://docs.aws.amazon.com/sagemaker/latest/dg/docker-container-environmental-variables-entrypoint.html
+ENV SAGEMAKER_TRAINING_MODULE=sagemaker_tensorflow_container.training:main
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends --allow-unauthenticated gnupg ca-certificates curl git wget vim openssh-client && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends --allow-unauthenticated \
+    python3-pip \
+    python3-setuptools \
+    python3-dev \
+    cuda-command-line-tools-11-1 \
+    libgomp1 \
+    libfreetype6-dev \
+    libhdf5-serial-dev \
+    libpng-dev \
+    libzmq3-dev \
+    build-essential \
+    zlib1g-dev \
+ && rm -rf /var/lib/apt/lists/* \
+ && mkdir -p /var/run/sshd
+
+# Set default NCCL parameters
+RUN echo NCCL_DEBUG=INFO >> /etc/nccl.conf
+
+ENV LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
+ENV PATH=/usr/local/openmpi/bin/:$PATH
+ENV PATH=/usr/local/nvidia/bin:$PATH
+
+WORKDIR /
+
+# Some TF tools expect a "python" binary
+RUN ln -s $(which python3) /usr/local/bin/python \
+ && ln -s $(which pip3) /usr/bin/pip
+
+ARG TF_URL="https://larsll-build-artifact-share.s3.eu-north-1.amazonaws.com/tensorflow/gpu-nv/tensorflow-1.15.4%2Bnv-cp36-cp36m-linux_x86_64.whl"
+
+RUN pip --no-cache-dir install --upgrade 'pip<21' 'setuptools<50' \
+    && pip install --no-cache-dir -U \
+    Pillow==7.0.0 \
+    keras_preprocessing==1.1.0 \
+    requests==2.22.0 \
+    keras==2.3.1 \
+    smdebug==0.7.2 \
+    sagemaker==1.50.17 \
+    sagemaker-experiments==0.1.7 \
+    numpy==1.17.3 \
+    h5py==2.10.0 \
+    scipy==1.3.1 \ 
+    scikit-learn==0.23.2 \
+    pandas==0.25.3 \
+    astor==0.8.1 \
+    gast==0.2.2 \
+    google-pasta==0.2.0 \
+    grpcio==1.34.0 \
+    "cryptography>=2.3" \
+    "sagemaker-tensorflow>=1.15,<1.16" \
+    "sagemaker-tensorflow-training>=2,<3" \
+    ${TF_URL} 
+
+ADD https://raw.githubusercontent.com/aws/aws-deep-learning-containers-utils/master/deep_learning_container.py /usr/local/bin/deep_learning_container.py
+
+RUN chmod +x /usr/local/bin/deep_learning_container.py
+
+RUN curl https://aws-dlc-licenses.s3.amazonaws.com/tensorflow/license.txt -o /license.txt
+
+CMD ["bin/bash"]

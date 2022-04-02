@@ -34,16 +34,15 @@ RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
     "sagemaker-containers>=2.7.1" \
     awscli
 
-COPY ./lib/redis.conf /etc/redis/redis.conf
-#COPY ./staging/markov /opt/amazon/markov
-COPY ./lib/rl_coach.patch /opt/amazon/rl_coach.patch
+COPY ./files/redis.conf /etc/redis/redis.conf
+COPY ./files/rl_coach.patch /opt/amazon/rl_coach.patch
 RUN patch -p1 -N --directory=/usr/local/lib/python3.6/dist-packages/ < /opt/amazon/rl_coach.patch
 
 ENV COACH_BACKEND=tensorflow
 
 # Copy workaround script for incorrect hostname
-COPY lib/changehostname.c /
-COPY lib/start.sh /usr/local/bin/start.sh
+COPY files/changehostname.c /
+COPY files/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
 ENV PYTHONPATH /opt/amazon/:$PYTHONPATH
