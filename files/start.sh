@@ -12,6 +12,11 @@ then
 
     CURRENT_HOST=$(jq .current_host  /opt/ml/input/config/resourceconfig.json)
 
+    if [[ -z "${SM_HP_CUDA_VISIBLE_DEVICES}" ]]; then
+        echo "Setting CUDA Devices to ${SM_HP_CUDA_VISIBLE_DEVICES}"
+        export CUDA_VISIBLE_DEVICES=${SM_HP_CUDA_VISIBLE_DEVICES}
+    fi
+
     sed -ie "s/PLACEHOLDER_HOSTNAME/$CURRENT_HOST/g" /changehostname.c
 
     gcc -o /changehostname.o -c -fPIC -Wall /changehostname.c
