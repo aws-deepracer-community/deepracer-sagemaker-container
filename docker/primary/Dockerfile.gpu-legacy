@@ -18,6 +18,12 @@ ENV LC_ALL=C.UTF-8
 # https://docs.aws.amazon.com/sagemaker/latest/dg/docker-container-environmental-variables-entrypoint.html
 ENV SAGEMAKER_TRAINING_MODULE=sagemaker_tensorflow_container.training:main
 
+RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed 's/\.//') && \
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/$distribution/x86_64/7fa2af80.pub
+
+# Install CUDNN
+RUN echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
+
 # Define framework-related package sources
 ARG TF_URL=https://tensorflow-aws.s3-us-west-2.amazonaws.com/1.15.2/AmazonLinux/gpu/final/tensorflow_gpu-1.15.2-cp36-cp36m-manylinux2010_x86_64.whl
 

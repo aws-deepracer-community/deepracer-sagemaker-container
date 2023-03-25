@@ -16,9 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Redis.
 RUN cd /tmp && \
-    wget http://download.redis.io/redis-stable.tar.gz && \
-    tar xvzf redis-stable.tar.gz && \
-    cd redis-stable && \
+    wget https://download.redis.io/releases/redis-6.2.7.tar.gz && \
+    tar xvzf redis-6.2.7.tar.gz && \
+    cd redis-6.2.7 && \
     make && \
     make install && \
     rm -rf /tmp/redis*
