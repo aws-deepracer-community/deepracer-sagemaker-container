@@ -45,6 +45,7 @@ RUN ln -s $(which python3) /usr/local/bin/python \
 
 ARG TF_URL="intel-tensorflow==1.15.4"
 
+ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
 RUN pip --no-cache-dir install --upgrade 'pip<21' 'setuptools<50' \
     && pip install --no-cache-dir -U \
     Pillow==7.0.0 \
