@@ -20,9 +20,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends --allow-unauthenticated gnupg ca-certificates curl git wget vim openssh-client && \
     rm -rf /var/lib/apt/lists/*
 
-ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
 RUN apt-get update \
- && apt-get install -y --no-install-recommends --allow-unauthenticated \
+    && apt-get install -y --no-install-recommends --allow-unauthenticated \
     python3-pip \
     python3-setuptools \
     python3-dev \
@@ -33,13 +32,14 @@ RUN apt-get update \
     libzmq3-dev \
     build-essential \
     zlib1g-dev \
- && rm -rf /var/lib/apt/lists/* \
- && mkdir -p /var/run/sshd
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /var/run/sshd
 
 ENV PATH=/usr/local/nvidia/bin:$PATH
 
 WORKDIR /
 
+ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
 ADD docker/requirements.txt /
 RUN pip --no-cache-dir install --upgrade pip 'setuptools<65' \
     && pip install --no-cache-dir -U -r requirements.txt
