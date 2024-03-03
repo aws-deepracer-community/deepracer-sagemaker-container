@@ -1,5 +1,5 @@
 FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu20.04
-
+ARG TF_VER
 LABEL maintainer="Amazon AI"
 
 # Prevent docker build get stopped by requesting user interaction
@@ -47,8 +47,9 @@ WORKDIR /
 
 ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
 ADD docker/requirements.txt /
+RUN echo "${TF_VER}" > /requirements-tf.txt
 RUN pip --no-cache-dir install --upgrade pip 'setuptools<65' \
-    && pip install --no-cache-dir -U -r requirements.txt
+    && pip install --no-cache-dir -U -r requirements.txt -r requirements-tf.txt
 
 ADD https://raw.githubusercontent.com/aws/aws-deep-learning-containers-utils/master/deep_learning_container.py /usr/local/bin/deep_learning_container.py
 
