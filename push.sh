@@ -9,15 +9,13 @@ function ctrl_c() {
 PREFIX="local"
 VERSION=$(cat VERSION)
 
+ARCH="cpu gpu cpu-intel"
+
 while getopts ":cglp:" opt; do
 case $opt in
 p) PREFIX="$OPTARG"
 ;;
-c) OPT_CPU="cpu"
-;;
-g) OPT_GPU="gpu"
-;;
-l) OPT_GPULEGACY="gpu-legacy"
+a) ARCH="$OPTARG"
 ;;
 \?) echo "Invalid option -$OPTARG" >&2
 exit 1
@@ -25,7 +23,6 @@ exit 1
 esac
 done
 
-ARCH=$(echo $OPT_CPU $OPT_GPU $OPT_GPULEGACY)
 echo "Pushing docker images for [$ARCH]"
 
 for A in $ARCH; do
