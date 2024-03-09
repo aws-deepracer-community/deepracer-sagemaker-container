@@ -11,7 +11,7 @@ VERSION=$(cat VERSION)
 
 ARCH="cpu gpu cpu-intel"
 
-while getopts ":cglp:" opt; do
+while getopts "p:a:" opt; do
 case $opt in
 p) PREFIX="$OPTARG"
 ;;
