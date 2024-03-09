@@ -4,13 +4,14 @@ ARG prefix
 FROM ${prefix}/sagemaker-tensorflow-container:${version}-${arch}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        wget \
-        jq \
-        ffmpeg \
-        libjpeg-dev \
-        libxrender1 \
-        python3-opengl \
-        xvfb && \
+    wget \
+    jq \
+    ffmpeg \
+    libjpeg-dev \
+    libxrender1 \
+    python3-opengl \
+    pkg-config \
+    xvfb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -24,19 +25,17 @@ RUN cd /tmp && \
     rm -rf /tmp/redis*
 
 RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
-    "PyOpenGL==3.1.0" \
-    "pyglet==1.3.2" \
-    "gym==0.12.5" \
-    "redis>=3.3" \
+    pyglet \
+    gym \
+    "redis>=4.4.4" \
     "rl-coach-slim==1.0.0"  \
-    "minio==4.0.5" \
-    eventlet \
-    "sagemaker-containers>=2.7.1" \
+    "protobuf<3.20" \
     awscli
+RUN wget https://raw.githubusercontent.com/protocolbuffers/protobuf/main/python/google/protobuf/internal/builder.py -O /usr/local/lib/python3.8/dist-packages/google/protobuf/internal/builder.py
 
 COPY ./files/redis.conf /etc/redis/redis.conf
 COPY ./files/rl_coach.patch /opt/amazon/rl_coach.patch
-RUN patch -p1 -N --directory=/usr/local/lib/python3.6/dist-packages/ < /opt/amazon/rl_coach.patch
+RUN patch -p1 -N --directory=/usr/local/lib/python3.8/dist-packages/ < /opt/amazon/rl_coach.patch
 
 ENV COACH_BACKEND=tensorflow
 
