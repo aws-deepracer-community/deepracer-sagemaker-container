@@ -30,6 +30,7 @@ RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
     "redis>=4.4.4" \
     "rl-coach-slim==1.0.0"  \
     "protobuf<3.20" \
+    "pytelegraf==0.3.3" \
     awscli
 RUN wget https://raw.githubusercontent.com/protocolbuffers/protobuf/main/python/google/protobuf/internal/builder.py -O /usr/local/lib/python3.8/dist-packages/google/protobuf/internal/builder.py
 
