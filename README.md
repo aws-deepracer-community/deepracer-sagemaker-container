@@ -1,4 +1,4 @@
-This repository is archived as all needed code is in the (Simapp/Robomaker repository)[https://github.com/aws-deepracer-community/deepracer-simapp].
+*This repository is archived as all needed code is in the (Simapp/Robomaker repository)[https://github.com/aws-deepracer-community/deepracer-simapp].*
 
 # Deepracer Sagemaker Container
 
